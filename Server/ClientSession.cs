@@ -32,12 +32,25 @@ namespace Server
 
 	class ClientSession : PacketSession
 	{
-		public override void OnConnected(EndPoint endPoint)
+        // TEMP
+        public void Handle_PlayerInfoOk(ArraySegment<byte> buffer)
+        {
+
+        }
+
+        // 클라 연결 후 실행
+        public override void OnConnected(EndPoint endPoint)
 		{
 			Console.WriteLine($"OnConnected : {endPoint}");
 			Thread.Sleep(5000);
 			Disconnect();
 		}
+
+        // 클라 연결을 끊은 후 실행
+        public override void OnDisconnected(EndPoint endPoint)
+        {
+            Console.WriteLine($"OnDisconnected : {endPoint}");
+        }
 
         // Recv 작업 완료 후 실행
         public override void OnRecvPacket(ArraySegment<byte> buffer)
@@ -72,17 +85,6 @@ namespace Server
 			}
 
 			Console.WriteLine($"RecvPacketId: {id}, Size {size}");
-		}
-
-		// TEMP
-		public void Handle_PlayerInfoOk(ArraySegment<byte> buffer)
-		{
-
-		}
-
-		public override void OnDisconnected(EndPoint endPoint)
-		{
-			Console.WriteLine($"OnDisconnected : {endPoint}");
 		}
 
 		// Send 작업 완료 후 실행

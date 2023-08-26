@@ -11,8 +11,8 @@ namespace ServerCore
 	{
 		public static readonly int HeaderSize = 2;
 
-		// [size(2)][packetId(2)][ ... ][size(2)][packetId(2)][ ... ]
-		public sealed override int OnRecv(ArraySegment<byte> buffer)
+        // Recv 작업 완료 후 실행
+        public sealed override int OnRecv(ArraySegment<byte> buffer)
 		{
 			int processLen = 0;
 
@@ -22,14 +22,16 @@ namespace ServerCore
 				if (buffer.Count < HeaderSize)
 					break;
 
-				// 패킷이 완전체로 도착했는지 확인
-				ushort dataSize = BitConverter.ToUInt16(buffer.Array, buffer.Offset);
+                // 패킷 형태: [size(2)][packetId(2)][ ... ][size(2)][packetId(2)][ ... ]
+                // 패킷 맨 앞에 size를 이용하여 패킷이 완전체로 도착했는지 확인
+                ushort dataSize = BitConverter.ToUInt16(buffer.Array, buffer.Offset);
 				if (buffer.Count < dataSize)
 					break;
 
-				// 여기까지 왔으면 패킷 조립 가능
+				// 패킷 처리
 				OnRecvPacket(new ArraySegment<byte>(buffer.Array, buffer.Offset, dataSize));
 				
+				// 다음 패킷으로 이동
 				processLen += dataSize;
 				buffer = new ArraySegment<byte>(buffer.Array, buffer.Offset + dataSize, buffer.Count - dataSize);
 			}
