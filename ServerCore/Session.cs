@@ -48,7 +48,7 @@ namespace ServerCore
 		RecvBuffer _recvBuffer = new RecvBuffer(1024);
 
 		object _lock = new object();
-		Queue<ArraySegment<byte>> _sendQueue = new Queue<ArraySegment<byte>>(); // 대기중인 Send 데이터
+		Queue<ArraySegment<byte>> _sendQueue = new Queue<ArraySegment<byte>>(); // 등록 대기중인 Send 데이터
 		List<ArraySegment<byte>> _pendingList = new List<ArraySegment<byte>>(); // 등록된 Send 데이터
 		SocketAsyncEventArgs _sendArgs = new SocketAsyncEventArgs(); // Send 이벤트 객체
 		SocketAsyncEventArgs _recvArgs = new SocketAsyncEventArgs(); // Recv 이벤트 객체
