@@ -31,7 +31,7 @@ namespace ServerCore
 			if (socket == null)
 				return;
 
-			// 비동기 Accept
+			// 비동기 Connect
 			bool pending = socket.ConnectAsync(args);
 			if (pending == false)
 				OnConnectCompleted(null, args);
