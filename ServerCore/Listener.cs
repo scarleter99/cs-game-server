@@ -20,7 +20,7 @@ namespace ServerCore
 			_listenSocket.Bind(endPoint);
 
 			// Listen
-			// 인자는 클라이언트 최대 대기수
+			// Param: 클라이언트 최대 대기수
 			_listenSocket.Listen(10);
 
 			// 이벤트 객체 생성 후 Accept 작업 등록
