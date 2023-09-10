@@ -17,16 +17,17 @@ class PacketManager
 	}
 	#endregion
 
-	Dictionary<ushort, Action<PacketSession, ArraySegment<byte>>> _onRecv = new Dictionary<ushort, Action<PacketSession, ArraySegment<byte>>>();
-	Dictionary<ushort, Action<PacketSession, IPacket>> _handler = new Dictionary<ushort, Action<PacketSession, IPacket>>();
+	Dictionary<ushort, Action<PacketSession, ArraySegment<byte>>> _onRecv = new Dictionary<ushort, Action<PacketSession, ArraySegment<byte>>>(); // 패킷번호 - 패킷 처리 함수
+	Dictionary<ushort, Action<PacketSession, IPacket>> _handler = new Dictionary<ushort, Action<PacketSession, IPacket>>(); // 패킷번호 - 패킷 Handler 함수
 		
 	public void Register()
 	{
-		_onRecv.Add((ushort)PacketID.C_PlayerInfoReq, MakePacket<C_PlayerInfoReq>);
-		_handler.Add((ushort)PacketID.C_PlayerInfoReq, PacketHandler.C_PlayerInfoReqHandler);
+		_onRecv.Add((ushort)PacketID.C_Chat, MakePacket<C_Chat>);
+		_handler.Add((ushort)PacketID.C_Chat, PacketHandler.C_ChatHandler);
 
 	}
 
+	// 패킷 처리
 	public void OnRecvPacket(PacketSession session, ArraySegment<byte> buffer)
 	{
 		ushort count = 0;
@@ -40,7 +41,8 @@ class PacketManager
 		if (_onRecv.TryGetValue(id, out action))
 			action.Invoke(session, buffer);
 	}
-
+	
+	// 패킷 생성
 	void MakePacket<T>(PacketSession session, ArraySegment<byte> buffer) where T : IPacket, new()
 	{
 		T pkt = new T();
