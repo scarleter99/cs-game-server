@@ -1,9 +1,10 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Net;
 using ServerCore;
 
+// 패킷 번호
 public enum PacketID
 {
 	C_PlayerInfoReq = 1,
@@ -11,6 +12,7 @@ public enum PacketID
 	
 }
 
+// 패킷 인터페이스
 interface IPacket
 {
 	ushort Protocol { get; }
@@ -47,6 +49,7 @@ class C_PlayerInfoReq : IPacket
 				return success;
 			}	
 		}
+		// List 안의 List
 		public List<Attribute> attributes = new List<Attribute>();
 	
 		public void Read(ReadOnlySpan<byte> s, ref ushort count)
@@ -93,8 +96,8 @@ class C_PlayerInfoReq : IPacket
 		ushort count = 0;
 
 		ReadOnlySpan<byte> s = new ReadOnlySpan<byte>(segment.Array, segment.Offset, segment.Count);
-		count += sizeof(ushort);
-		count += sizeof(ushort);
+		count += sizeof(ushort); // 패킷 크기
+		count += sizeof(ushort); // 패킷 번호
 		this.testByte = (sbyte)segment.Array[segment.Offset + count];
 		count += sizeof(sbyte);
 		this.playerId = BitConverter.ToInt64(s.Slice(count, s.Length - count));
@@ -103,7 +106,8 @@ class C_PlayerInfoReq : IPacket
 		count += sizeof(ushort);
 		this.name = Encoding.Unicode.GetString(s.Slice(count, nameLen));
 		count += nameLen;
-		this.skills.Clear();
+        // List는 크기를 Read한 후 전용 Read 함수 실행
+        this.skills.Clear();
 		ushort skillLen = BitConverter.ToUInt16(s.Slice(count, s.Length - count));
 		count += sizeof(ushort);
 		for (int i = 0; i < skillLen; i++)
@@ -117,12 +121,13 @@ class C_PlayerInfoReq : IPacket
 	public ArraySegment<byte> Write()
 	{
 		ArraySegment<byte> segment = SendBufferHelper.Open(4096);
-		ushort count = 0;
+		ushort count = 0; // 현재 패킷 크기
 		bool success = true;
 
+		// 데이터 직렬화
 		Span<byte> s = new Span<byte>(segment.Array, segment.Offset, segment.Count);
 
-		count += sizeof(ushort);
+		count += sizeof(ushort); // 패킷 크기
 		success &= BitConverter.TryWriteBytes(s.Slice(count, s.Length - count), (ushort)PacketID.C_PlayerInfoReq);
 		count += sizeof(ushort);
 		segment.Array[segment.Offset + count] = (byte)this.testByte;
@@ -133,11 +138,12 @@ class C_PlayerInfoReq : IPacket
 		success &= BitConverter.TryWriteBytes(s.Slice(count, s.Length - count), nameLen);
 		count += sizeof(ushort);
 		count += nameLen;
+		// List는 크기 Write 후 전용 Write 함수 실행
 		success &= BitConverter.TryWriteBytes(s.Slice(count, s.Length - count), (ushort)this.skills.Count);
 		count += sizeof(ushort);
 		foreach (Skill skill in this.skills)
 			success &= skill.Write(s, ref count);
-		success &= BitConverter.TryWriteBytes(s, count);
+		success &= BitConverter.TryWriteBytes(s, count); // 전체 패킷 크기는 마지막에 입력
 		if (success == false)
 			return null;
 		return SendBufferHelper.Close(count);

@@ -83,11 +83,10 @@ namespace PacketGenerator
         }
 
         // 멤버 변수 파싱
-        // {1} 멤버 변수들
-        // {2} 멤버 변수 Read
-        // {3} 멤버 변수 Write
+        // Return: {1} 멤버 변수들, {2} 멤버 변수 Read, {3} 멤버 변수 Write
         public static Tuple<string, string, string> ParseMembers(XmlReader r)
         {
+            // 패킷 "name" 속성의 값 추출
             string packetName = r["name"];
 
             string memberCode = "";
