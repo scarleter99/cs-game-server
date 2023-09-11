@@ -10,7 +10,7 @@ namespace ServerCore
 		// 현재 쓰레드에서 사용할 Send 버퍼 참조값 보관
 		public static ThreadLocal<SendBuffer> CurrentBuffer = new ThreadLocal<SendBuffer>(() => { return null; });
 
-		public static int ChunkSize { get; set; } = 4096 * 100; // 생성할 Send 버퍼 크기
+		public static int ChunkSize { get; set; } = 65535 * 100; // 생성할 Send 버퍼 크기
 
         // SendBuffer에 데이터를 담기 전 실행
         public static ArraySegment<byte> Open(int reserveSize)

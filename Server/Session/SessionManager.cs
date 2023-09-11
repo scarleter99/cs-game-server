@@ -1,4 +1,4 @@
-﻿using Server.Session;
+﻿using Server;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -12,7 +12,7 @@ namespace Server
         public static SessionManager Instance { get { return _session; } }
 
         int _sessionId = 0; // 현재 세션 Id
-        Dictionary<int, ClientSession> _sessions = new Dictionary<int, ClientSession>();
+        Dictionary<int, ClientSession> _sessions = new Dictionary<int, ClientSession>(); // 세션 Id - 클라 세션
         object _lock = new object();
 
         public ClientSession Generate()

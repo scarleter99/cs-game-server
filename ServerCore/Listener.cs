@@ -11,7 +11,7 @@ namespace ServerCore
 		Socket _listenSocket;
 		Func<Session> _sessionFactory; // 생성할 Session을 반환하는 Delegate
 
-		public void Init(IPEndPoint endPoint, Func<Session> sessionFactory)
+		public void Init(IPEndPoint endPoint, Func<Session> sessionFactory, int register = 10, int backLog = 100)
 		{
 			_listenSocket = new Socket(endPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
 			_sessionFactory += sessionFactory;
@@ -21,13 +21,16 @@ namespace ServerCore
 
 			// Listen
 			// Param: 클라이언트 최대 대기수
-			_listenSocket.Listen(10);
+			_listenSocket.Listen(backLog);
 
 			// 이벤트 객체 생성 후 Accept 작업 등록
-			SocketAsyncEventArgs args = new SocketAsyncEventArgs();
-			args.Completed += new EventHandler<SocketAsyncEventArgs>(OnAcceptCompleted);
+			for (int i = 0; i < register; i++)
+			{
+                SocketAsyncEventArgs args = new SocketAsyncEventArgs();
+                args.Completed += new EventHandler<SocketAsyncEventArgs>(OnAcceptCompleted);
 
-			RegisterAccept(args);
+                RegisterAccept(args);
+            }
 		}
 
 		// Accept 작업 등록

@@ -8,15 +8,16 @@ namespace Server
 {
     class GameRoom : IJobQueue
     {
-        List<ClientSession> _sessions = new List<ClientSession>();
+        List<ClientSession> _sessions = new List<ClientSession>(); // Room에 속한 Session
         JobQueue _jobQueue = new JobQueue();
-        List<ArraySegment<byte>> _pendingList = new List<ArraySegment<byte>>();
+        List<ArraySegment<byte>> _pendingList = new List<ArraySegment<byte>>(); // 등록된 Send 데이터
 
         public void Push(Action job)
         {
             _jobQueue.Push(job);
         }
 
+        // _pendingList의 모든 데이터를 모든 클라에 Send
         public void Flush()
         {
             // N ^ 2
@@ -27,6 +28,7 @@ namespace Server
             _pendingList.Clear();
         }
 
+        // 모든 클라에게 Send할 채팅을 _pendingList에 추가
         public void Broadcast(ClientSession session, string chat)
         {
             S_Chat packet = new S_Chat();

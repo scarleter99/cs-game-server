@@ -10,18 +10,21 @@ namespace ServerCore
 	{
 		Func<Session> _sessionFactory; // 생성할 Session을 반환하는 Delegate
 
-        public void Connect(IPEndPoint endPoint, Func<Session> sessionFactory)
+        public void Connect(IPEndPoint endPoint, Func<Session> sessionFactory, int count = 1)
 		{
-			Socket socket = new Socket(endPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
-			_sessionFactory = sessionFactory;
+			for (int i = 0; i < count; i++)
+			{
+                Socket socket = new Socket(endPoint.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
+                _sessionFactory = sessionFactory;
 
-			// 이벤트 객체 생성 후 Connect 작업 등록
-			SocketAsyncEventArgs args = new SocketAsyncEventArgs();
-			args.Completed += OnConnectCompleted;
-			args.RemoteEndPoint = endPoint; // 연결할 서버 주소 설정
-			args.UserToken = socket; // 사용자 정의 데이터로 사용할 소켓 설정
+                // 이벤트 객체 생성 후 Connect 작업 등록
+                SocketAsyncEventArgs args = new SocketAsyncEventArgs();
+                args.Completed += OnConnectCompleted;
+                args.RemoteEndPoint = endPoint; // 연결할 서버 주소 설정
+                args.UserToken = socket; // 사용자 정의 데이터로 사용할 소켓 설정
 
-			RegisterConnect(args);
+                RegisterConnect(args);
+            }
 		}
 
 		// Connect 작업 등록

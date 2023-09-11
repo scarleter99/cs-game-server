@@ -14,8 +14,8 @@ namespace ServerCore
         // Recv 작업 완료 후 실행
         public sealed override int OnRecv(ArraySegment<byte> buffer)
         {
-            int processLen = 0;
-            int packetCount = 0;
+            int processLen = 0; // 현재 처리한 패킷 길이
+            int packetCount = 0; // 현재 처리한 패킷 수
 
             while (true)
             {
@@ -53,7 +53,7 @@ namespace ServerCore
         Socket _socket; // 할당받은 소켓
 		int _disconnected = 0; // 현재 연결 상태
 
-		RecvBuffer _recvBuffer = new RecvBuffer(1024);
+		RecvBuffer _recvBuffer = new RecvBuffer(65535);
 
         object _lock = new object();
 		Queue<ArraySegment<byte>> _sendQueue = new Queue<ArraySegment<byte>>(); // 등록 대기중인 Send 데이터
@@ -97,6 +97,7 @@ namespace ServerCore
                 foreach (ArraySegment<byte> sendBuff in sendBuffList)
                     _sendQueue.Enqueue(sendBuff);
 
+                // 등록된 Send 데이터가 없으면 Send 작업 등록
                 if (_pendingList.Count == 0)
                     RegisterSend();
             }

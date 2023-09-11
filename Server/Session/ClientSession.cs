@@ -12,7 +12,7 @@ namespace Server
     class ClientSession : PacketSession
     {
         public int SessionId { get; set; }
-        public GameRoom Room { get; set; }
+        public GameRoom Room { get; set; } // 속해있는 Room
 
         public override void OnConnected(EndPoint endPoint)
         {
@@ -27,13 +27,14 @@ namespace Server
             SessionManager.Instance.Remove(this);
             if (Room != null)
             {
+                // Room이 null이 돼도 에러 발생하지 않음
                 GameRoom room = Room;
                 room.Push(() => room.Leave(this));
                 Room = null;
             }
         }
 
-        // Recv 작업 완료 후 실행
+        // 패킷 처리
         public override void OnRecvPacket(ArraySegment<byte> buffer)
         {
             PacketManager.Instance.OnRecvPacket(this, buffer);
