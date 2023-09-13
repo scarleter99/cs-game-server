@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Net;
-using System.Net.Sockets;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using ServerCore;
 
 namespace Server
@@ -16,6 +12,7 @@ namespace Server
 
         static void FlushRoom()
         {
+            // JobQueue Flush 이후 JobQueue Flush 다시 예약
             Room.Push(() => Room.Flush());
             JobTimer.Instance.Push(FlushRoom, 250);
         }
@@ -31,9 +28,10 @@ namespace Server
             _listener.Init(endPoint, () => { return SessionManager.Instance.Generate(); });
             Console.WriteLine("Listening...");
 
-            //FlushRoom();
+            // 첫 JobQueue Flush 예약
             JobTimer.Instance.Push(FlushRoom);
 
+            // 실행 시간에 도달한 JobTimer Flush
             while (true)
             {
                 JobTimer.Instance.Flush();

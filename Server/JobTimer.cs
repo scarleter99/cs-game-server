@@ -36,7 +36,7 @@ namespace Server
             }
         }
 
-        // Job 실행
+        // 실행 시간에 도달한 Job 모두 실행
         public void Flush()
         {
             while (true)
