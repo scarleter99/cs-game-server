@@ -21,6 +21,7 @@ namespace Server
         PriorityQueue<JobTimerElem> _pq = new PriorityQueue<JobTimerElem>();
         object _lock = new object();
 
+        // 싱글톤
         public static JobTimer Instance { get; } = new JobTimer();
 
         public void Push(Action action, int tickAfter = 0)
@@ -35,6 +36,7 @@ namespace Server
             }
         }
 
+        // Job 실행
         public void Flush()
         {
             while (true)
@@ -48,6 +50,7 @@ namespace Server
                     if (_pq.Count == 0)
                         break;
 
+                    // 아직 실행 시간에 도달하지 못했다면 Break
                     job = _pq.Peek();
                     if (job.execTick > now)
                         break;
