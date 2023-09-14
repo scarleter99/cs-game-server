@@ -28,7 +28,7 @@ namespace Server
             _pendingList.Clear();
         }
 
-        // 모든 클라에게 Send할 채팅을 _pendingList에 추가
+        // 모든 클라에게 Send할 패킷을 _pendingList에 추가
         public void Broadcast(ClientSession session, string chat)
         {
             S_Chat packet = new S_Chat();

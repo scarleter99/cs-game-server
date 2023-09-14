@@ -13,7 +13,7 @@ namespace DummyClient
 		List<ServerSession> _sessions = new List<ServerSession>();
 		object _lock = new object();
 
-		// 모든 서버에 채팅 전송
+		// 모든 서버에 패킷 전송
 		public void SendForEach()
 		{
 			lock (_lock)
