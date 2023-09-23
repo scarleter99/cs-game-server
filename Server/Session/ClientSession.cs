@@ -13,6 +13,9 @@ namespace Server
     {
         public int SessionId { get; set; }
         public GameRoom Room { get; set; } // 속해있는 Room
+        public float PosX { get; set; }
+        public float PosY { get; set; }
+        public float PosZ { get; set; }
 
         public override void OnConnected(EndPoint endPoint)
         {

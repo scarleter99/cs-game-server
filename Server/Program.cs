@@ -12,7 +12,7 @@ namespace Server
 
         static void FlushRoom()
         {
-            // JobQueue Flush 이후 JobQueue Flush 다시 예약
+            // Room Flush 이후 Room Flush 다시 예약
             Room.Push(() => Room.Flush());
             JobTimer.Instance.Push(FlushRoom, 250);
         }
@@ -28,7 +28,7 @@ namespace Server
             _listener.Init(endPoint, () => { return SessionManager.Instance.Generate(); });
             Console.WriteLine("Listening...");
 
-            // 첫 JobQueue Flush 예약
+            // 첫 Room Flush 예약
             JobTimer.Instance.Push(FlushRoom);
 
             // 실행 시간에 도달한 JobTimer Flush

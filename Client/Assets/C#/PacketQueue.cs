@@ -4,6 +4,7 @@ using UnityEngine;
 
 public class PacketQueue
 {
+    // ΩÃ±€≈Ê
     public static PacketQueue Instance { get; } = new PacketQueue();
 
     Queue<IPacket> _packetQueue = new Queue<IPacket>();

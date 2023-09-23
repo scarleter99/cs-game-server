@@ -24,14 +24,16 @@ public class PacketManager
 		Register();
 	}}
 
-	Dictionary<ushort, Func<PacketSession, ArraySegment<byte>, IPacket>> _makeFunc = new Dictionary<ushort, Func<PacketSession, ArraySegment<byte>, IPacket>>();
-	Dictionary<ushort, Action<PacketSession, IPacket>> _handler = new Dictionary<ushort, Action<PacketSession, IPacket>>();
-		
+	Dictionary<ushort, Func<PacketSession, ArraySegment<byte>, IPacket>> _makeFunc = new Dictionary<ushort, Func<PacketSession, ArraySegment<byte>, IPacket>>(); // 패킷 Id - 해당 Id 패킷 생성 함수
+	Dictionary<ushort, Action<PacketSession, IPacket>> _handler = new Dictionary<ushort, Action<PacketSession, IPacket>>(); // 패킷 Id - 해당 Id 패킷 Handle 함수
+	
+	// 패킷 별 생성 함수, Handle 함수 등록
 	public void Register()
 	{{
 {0}
 	}}
-
+	
+	// 패킷 처리
 	public void OnRecvPacket(PacketSession session, ArraySegment<byte> buffer, Action<PacketSession, IPacket> onRecvCallback = null)
 	{{
 		ushort count = 0;
@@ -44,6 +46,7 @@ public class PacketManager
 		Func<PacketSession, ArraySegment<byte>, IPacket> func = null;
 		if (_makeFunc.TryGetValue(id, out func))
 		{{
+			// 패킷 생성 후 콜백 함수 실행, 없으면 패킷 처리 함수 실행
 			IPacket packet = func.Invoke(session, buffer);
 			if (onRecvCallback != null)
 				onRecvCallback.Invoke(session, packet);
@@ -51,14 +54,16 @@ public class PacketManager
 				HandlePacket(session, packet);
 		}}
 	}}
-
+	
+	// byte 버퍼로 패킷 생성
 	T MakePacket<T>(PacketSession session, ArraySegment<byte> buffer) where T : IPacket, new()
 	{{
 		T pkt = new T();
 		pkt.Read(buffer);
 		return pkt;
 	}}
-
+	
+	// 패킷 Handle
 	public void HandlePacket(PacketSession session, IPacket packet)
 	{{
 		Action<PacketSession, IPacket> action = null;
@@ -113,12 +118,12 @@ public class {0} : IPacket
 	{1}
 
 	public ushort Protocol {{ get {{ return (ushort)PacketID.{0}; }} }}
-
+	
 	public void Read(ArraySegment<byte> segment)
 	{{
 		ushort count = 0;
-		count += sizeof(ushort);
-		count += sizeof(ushort);
+		count += sizeof(ushort); // 패킷 크기
+		count += sizeof(ushort); // 패킷 번호
 		{2}
 	}}
 
@@ -126,13 +131,14 @@ public class {0} : IPacket
 	{{
 		ArraySegment<byte> segment = SendBufferHelper.Open(4096);
 		ushort count = 0;
-
-		count += sizeof(ushort);
+		
+		// 데이터 직렬화
+		count += sizeof(ushort); // 패킷 크기
 		Array.Copy(BitConverter.GetBytes((ushort)PacketID.{0}), 0, segment.Array, segment.Offset + count, sizeof(ushort));
 		count += sizeof(ushort);
 		{3}
 
-		Array.Copy(BitConverter.GetBytes(count), 0, segment.Array, segment.Offset, sizeof(ushort));
+		Array.Copy(BitConverter.GetBytes(count), 0, segment.Array, segment.Offset, sizeof(ushort)); // 패킷 크기는 마지막에 입력
 
 		return SendBufferHelper.Close(count);
 	}}

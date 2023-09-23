@@ -32,6 +32,7 @@ public class NetworkManager : MonoBehaviour
 
     void Update()
     {
+        // PacketQueue에 추가된 모든 Packet Handle
         List<IPacket> list = PacketQueue.Instance.PopAll();
         foreach (IPacket packet in list)
             PacketManager.Instance.HandlePacket(_session, packet);

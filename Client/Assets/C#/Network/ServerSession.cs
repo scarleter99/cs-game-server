@@ -23,6 +23,7 @@ namespace DummyClient
         // 패킷 처리
         public override void OnRecvPacket(ArraySegment<byte> buffer)
         {
+            // PacketQueue에 추가
             PacketManager.Instance.OnRecvPacket(this, buffer, (s, p) => PacketQueue.Instance.Push(p));
         }
 
